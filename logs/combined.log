@@ -1,0 +1,7 @@
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [14/Oct/2025:12:10:28 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [14/Oct/2025:12:10:30 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [14/Oct/2025:12:10:49 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
