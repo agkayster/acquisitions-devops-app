@@ -16,6 +16,49 @@ export const hashPassword = async password => {
   }
 };
 
+// function that compares a password with its hash
+export const comparePassword = async (password, hash) => {
+  try {
+    return await bcrypt.compare(password, hash);
+  } catch (error) {
+    logger.error('Error comparing password:', error);
+    throw new Error('Error comparing password');
+  }
+};
+
+// function to authenticate a user
+export const authenticateUser = async ({ email, password }) => {
+  try {
+    // find user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    // if user doesn't exist, throw an error
+    if (!user) {
+      throw new Error('User with this email does not exist');
+    }
+
+    // compare the provided password with the stored hash
+    const isPasswordValid = await comparePassword(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    logger.info(`User authenticated successfully: ${user.email}`);
+
+    // return user without password
+    const { password: _password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch (error) {
+    logger.error('Error authenticating user:', error);
+    throw error; // re-throw the original error to preserve the specific message
+  }
+};
+
 // function to create a new user
 export const createUser = async ({ name, email, password, role = 'user' }) => {
   try {
