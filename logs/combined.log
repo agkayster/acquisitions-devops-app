@@ -231,3 +231,11 @@
 {"level":"info","message":"::1 - - [24/Oct/2025:14:28:03 +0000] \"GET /api HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
 {"conclusion":"ALLOW","id":"req_01k8b9xcatedxajarvv77jg3b4","ip":"::1","level":"info","message":"Arcjet decision","path":"/api","reason":{"allowed":["POSTMAN"],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
 {"level":"info","message":"::1 - - [24/Oct/2025:14:28:09 +0000] \"GET /api HTTP/1.1\" 200 199 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
