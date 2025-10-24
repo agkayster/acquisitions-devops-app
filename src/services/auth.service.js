@@ -27,7 +27,7 @@ export const comparePassword = async (password, hash) => {
 };
 
 // function to authenticate a user
-export const authenticateUser = async ({ email, password }) => {
+export const authenticateUser = async ({ email, password: plainPassword }) => {
   try {
     // find user by email
     const [user] = await db
@@ -42,7 +42,7 @@ export const authenticateUser = async ({ email, password }) => {
     }
 
     // compare the provided password with the stored hash
-    const isPasswordValid = await comparePassword(password, user.password);
+    const isPasswordValid = await comparePassword(plainPassword, user.password);
 
     if (!isPasswordValid) {
       throw new Error('Invalid password');
@@ -51,7 +51,8 @@ export const authenticateUser = async ({ email, password }) => {
     logger.info(`User authenticated successfully: ${user.email}`);
 
     // return user without password
-    const { password: _password, ...userWithoutPassword } = user;
+    const userWithoutPassword = { ...user };
+    delete userWithoutPassword.password;
     return userWithoutPassword;
   } catch (error) {
     logger.error('Error authenticating user:', error);
