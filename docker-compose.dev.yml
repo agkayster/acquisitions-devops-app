@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  #============================================================================
+  # Neon Local - PostgreSQL proxy for development
+  #============================================================================
+  neon-local:
+    image: postgres:15-alpine
+    container_name: acquisitions-neon-local
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      # PostgreSQL configuration mimicking Neon
+      POSTGRES_USER: neondb_owner
+      POSTGRES_PASSWORD: localpassword
+      POSTGRES_DB: main
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      # Persist data across container restarts
+      - neon_local_data:/var/lib/postgresql/data
+      # Optional: Custom initialization scripts
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - acquisitions-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neondb_owner -d main"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  #============================================================================
+  # Application - Development mode with hot reload
+  #============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: acquisitions-app-dev
+    ports:
+      - "8000:8000"
+    environment:
+      # Load development environment variables
+      NODE_ENV: development
+      PORT: 8000
+      LOG_LEVEL: debug
+      DATABASE_URL: postgres://neondb_owner:localpassword@neon-local:5432/main
+      ARCJET_KEY: ajkey_test_development_key
+      JWT_SECRET: your-dev-jwt-secret-key-here
+      JWT_EXPIRES_IN: 24h
+      DEBUG: "true"
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/app/src:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+      # Exclude node_modules to prevent conflicts
+      - /app/node_modules
+    networks:
+      - acquisitions-network
+    depends_on:
+      neon-local:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
+  #============================================================================
+  # Optional: Database GUI (Adminer) for development
+  #============================================================================
+  adminer:
+    image: adminer:4.8.1-standalone
+    container_name: acquisitions-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: neon-local
+      ADMINER_DESIGN: pepa-linha-dark
+    networks:
+      - acquisitions-network
+    depends_on:
+      - neon-local
+    profiles:
+      - tools
+    restart: unless-stopped
+
+#==============================================================================
+# Networks
+#==============================================================================
+networks:
+  acquisitions-network:
+    driver: bridge
+    name: acquisitions-network
+
+#==============================================================================
+# Volumes
+#==============================================================================
+volumes:
+  neon_local_data:
+    name: acquisitions-neon-local-data
