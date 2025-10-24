@@ -6,6 +6,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from '#routes/auth.routes.js';
+import { aj, ajHealth } from '#config/arcjet.js';
+import { arcjetMiddleware } from '#middleware/arcjet.middleware.js';
 
 const app = express();
 
@@ -25,13 +27,13 @@ app.use(
   morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } })
 ); /* combined means for both dev and production */
 
-app.get('/', (req, res) => {
+app.get('/', arcjetMiddleware(aj), (req, res) => {
   logger.info('Root endpoint accessed and Hello from Acquisitions');
   res.status(200).send('Hello from Acquisitions API!');
 });
 
 /* adding a health check */
-app.get('/health', (req, res) => {
+app.get('/health', arcjetMiddleware(ajHealth), (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString() /* gives human readable format */,
@@ -39,7 +41,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/api', (req, res) => {
+app.get('/api', arcjetMiddleware(aj), (req, res) => {
   res.status(200).json({
     message: 'Welcome to the Acquisitions API',
     version: '1.0.0',
