@@ -9,13 +9,15 @@ services:
     container_name: acquisitions-neon-local
     platform: linux/amd64
     ports:
-      - "5432:5432"
-    environment:
-      # PostgreSQL configuration mimicking Neon
-      POSTGRES_USER: neondb_owner
-      POSTGRES_PASSWORD: localpassword
-      POSTGRES_DB: main
-      POSTGRES_HOST_AUTH_METHOD: md5
+      - '5432:5432'
+    env_file:
+      - .env.development
+    # environment:
+    #   # PostgreSQL configuration mimicking Neon
+    #   POSTGRES_USER: neondb_owner
+    #   POSTGRES_PASSWORD: localpassword
+    #   POSTGRES_DB: main
+    #   POSTGRES_HOST_AUTH_METHOD: md5
     volumes:
       # Persist data across container restarts
       - neon_local_data:/var/lib/postgresql/data
@@ -24,7 +26,7 @@ services:
     networks:
       - acquisitions-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U neondb_owner -d main"]
+      test: ['CMD-SHELL', 'pg_isready -U neondb_owner -d main']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,17 +42,19 @@ services:
       target: development
     container_name: acquisitions-app-dev
     ports:
-      - "8000:8000"
-    environment:
-      # Load development environment variables
-      NODE_ENV: development
-      PORT: 8000
-      LOG_LEVEL: debug
-      DATABASE_URL: postgres://neondb_owner:localpassword@neon-local:5432/main
-      ARCJET_KEY: ajkey_test_development_key
-      JWT_SECRET: your-dev-jwt-secret-key-here
-      JWT_EXPIRES_IN: 24h
-      DEBUG: "true"
+      - '8000:8000'
+    env_file:
+      - .env.development
+    # environment:
+    #   # Load development environment variables
+    #   NODE_ENV: development
+    #   PORT: 8000
+    #   LOG_LEVEL: debug
+    #   DATABASE_URL: postgres://neondb_owner:localpassword@neon-local:5432/main
+    #   ARCJET_KEY: ajkey_test_development_key
+    #   JWT_SECRET: your-dev-jwt-secret-key-here
+    #   JWT_EXPIRES_IN: 24h
+    #   DEBUG: "true"
     volumes:
       # Mount source code for hot reload
       - ./src:/app/src:ro
@@ -66,7 +70,7 @@ services:
       neon-local:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:8000/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -89,7 +93,7 @@ services:
     image: adminer:4.8.1-standalone
     container_name: acquisitions-adminer
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       ADMINER_DEFAULT_SERVER: neon-local
       ADMINER_DESIGN: pepa-linha-dark
