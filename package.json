@@ -32,7 +32,8 @@
     "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
     "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
     "docker:build": "docker build -t acquisitions-app .",
-    "docker:clean": "docker system prune -f && docker volume prune -f"
+    "docker:clean": "docker system prune -f && docker volume prune -f",
+    "dev:docker": "sh ./scripts/dev.sh"
   },
   "keywords": [],
   "author": "",
