@@ -13,24 +13,26 @@ services:
         NODE_VERSION: 20-alpine
     container_name: acquisitions-app-prod
     ports:
-      - "8000:8000"
-    environment:
-      # Production environment variables
-      NODE_ENV: production
-      PORT: 8000
-      LOG_LEVEL: info
-      DEBUG: "false"
-      
-      # Database URL - Inject via environment variable or Docker secrets
-      DATABASE_URL: ${DATABASE_URL}
-      
-      # Security configuration - Inject via environment variables or secrets
-      ARCJET_KEY: ${ARCJET_KEY}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
-      
-      # Optional: Additional production environment variables
-      TZ: UTC
+      - '8000:8000'
+    env_file:
+      - .env.production
+    # environment:
+    #   # Production environment variables
+    #   NODE_ENV: production
+    #   PORT: 8000
+    #   LOG_LEVEL: info
+    #   DEBUG: "false"
+
+    #   # Database URL - Inject via environment variable or Docker secrets
+    #   DATABASE_URL: ${DATABASE_URL}
+
+    #   # Security configuration - Inject via environment variables or secrets
+    #   ARCJET_KEY: ${ARCJET_KEY}
+    #   JWT_SECRET: ${JWT_SECRET}
+    #   JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+
+    #   # Optional: Additional production environment variables
+    #   TZ: UTC
     volumes:
       # Mount logs directory for persistence and monitoring
       - app_logs:/app/logs
@@ -39,7 +41,11 @@ services:
     networks:
       - acquisitions-network
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -67,8 +73,8 @@ services:
     image: nginx:1.25-alpine
     container_name: acquisitions-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
@@ -95,7 +101,7 @@ services:
   #============================================================================
   # Optional: Monitoring and Logging
   #============================================================================
-  
+
   # Log aggregation
   fluentd:
     image: fluent/fluentd:v1.16-1
@@ -114,7 +120,7 @@ services:
     image: prom/prometheus:v2.45.0
     container_name: acquisitions-prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
