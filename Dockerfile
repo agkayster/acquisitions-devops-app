@@ -42,13 +42,13 @@ USER nodejs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "fetch('http://localhost:${PORT:-8000}/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+    CMD node -e "fetch('http://localhost:${PORT:-3000}/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
 # Expose port
 EXPOSE 8000
 
 # Start application with file watching for development
-CMD ["dumb-init", "npm", "dev"]
+CMD ["dumb-init", "npm","run", "dev"]
 # CMD ["dumb-init", "node", "--watch", "src/index.js"]
 
 #==============================================================================
@@ -91,11 +91,11 @@ USER nodejs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "fetch('http://localhost:${PORT:-8000}/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
+    CMD node -e "fetch('http://localhost:${PORT:-3000}/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
 # Expose port
-EXPOSE 8000
+EXPOSE 3000
 
 # Start application
-CMD ["dumb-init", "npm", "dev"]
+CMD ["dumb-init", "npm","run" ,"dev"]
 # CMD ["dumb-init", "node", "src/index.js"]

@@ -13,7 +13,7 @@ services:
         NODE_VERSION: 20-alpine
     container_name: acquisitions-app-prod
     ports:
-      - '8000:8000'
+      - '3000:3000'
     env_file:
       - .env.production
     # environment:

@@ -241,3 +241,44 @@
 {"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
 {"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
 {"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k5qttxes2ac5xvexk7jkce","ip":"::1","level":"info","message":"Arcjet decision","path":"/","reason":{"allowed":[],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:15:49:09 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k5sm6kes29nbggxg8a7ge8","ip":"::1","level":"info","message":"Arcjet decision","path":"/api","reason":{"allowed":[],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"}
+{"level":"info","message":"::1 - - [27/Oct/2025:15:50:07 +0000] \"GET /api HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k5td24es2tb5jms227c1tc","ip":"::1","level":"info","message":"Arcjet decision","path":"/","reason":{"allowed":["POSTMAN"],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:15:50:33 +0000] \"GET / HTTP/1.1\" 200 28 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k5yey2es2s8t6djv6wd5ah","ip":"::1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"New user: frank.chiboka@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, frank.chiboka@gmail.com, Frank Chiboka, user","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:15:52:48 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 130 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k6wbkdes3v7mt2844f4hdk","ip":"::1","level":"info","message":"Arcjet decision","path":"/","reason":{"allowed":["POSTMAN"],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:09:06 +0000] \"GET / HTTP/1.1\" 200 28 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k6wmegffjr7gza69xf5r7y","ip":"::1","level":"info","message":"Arcjet decision","path":"/api","reason":{"allowed":["POSTMAN"],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:09:15 +0000] \"GET /api HTTP/1.1\" 200 199 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"DENY","id":"lreq_01k8k6wva6esk88149sdrxktfb","ip":"::1","level":"info","message":"Arcjet decision","path":"/health","reason":{"allowed":[],"denied":["POSTMAN"],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"id":"lreq_01k8k6wva6esk88149sdrxktfb","ip":"::1","level":"warn","message":"Arcjet request denied","path":"/health","reason":{"allowed":[],"denied":["POSTMAN"],"spoofed":false,"type":"BOT","verified":false},"results":[{"conclusion":"ALLOW","fingerprint":"fp::2::0d219da6100b99f95cf639b77e088c6df3c096aa5fd61dec5287c5cf94d5e545","reason":{"max":0,"remaining":0,"reset":0,"type":"RATE_LIMIT","window":0},"ruleId":"90cb38477c43f286dd2b243ff2b258ccd560b1a7864ddb535a8ecd2d701c2d2a","state":"NOT_RUN","ttl":0},{"conclusion":"DENY","fingerprint":"fp::2::0d219da6100b99f95cf639b77e088c6df3c096aa5fd61dec5287c5cf94d5e545","reason":{"allowed":[],"denied":["POSTMAN"],"spoofed":false,"type":"BOT","verified":false},"ruleId":"e9d86dce6d4319ea098cc6e646e375768b7132c8be28faac9423fdb6313b71d6","state":"RUN","ttl":60}],"service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:09:22 +0000] \"GET /health HTTP/1.1\" 403 69 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k6xdm8ffjs8j2e5ard2t56","ip":"::1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"User authenticated successfully: nnamdi.chiboka@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: nnamdi.chiboka@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:09:44 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 131 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k7kxybes5997smkrdennej","ip":"::1","level":"info","message":"Arcjet decision","path":"/","reason":{"allowed":["POSTMAN"],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"Root endpoint accessed and Hello from Acquisitions","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:21:58 +0000] \"GET / HTTP/1.1\" 200 28 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k7mcdves5an1fnkxfheh7e","ip":"::1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"User authenticated successfully: nnamdi.chiboka@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: nnamdi.chiboka@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:22:14 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 131 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8k7nn12ffkr1d14wnpcyex0","ip":"::1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"New user: benjamin@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, benjamin@gmail.com, Benjamin Sesko, user","service":"acquisitions-api"}
+{"level":"info","message":"::1 - - [27/Oct/2025:16:22:56 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 126 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
