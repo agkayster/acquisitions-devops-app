@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  #============================================================================
+  # Application - Production mode
+  #============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NODE_VERSION: 20-alpine
+    container_name: acquisitions-app-prod
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env.production
+    # environment:
+    #   # Production environment variables
+    #   NODE_ENV: production
+    #   PORT: 8000
+    #   LOG_LEVEL: info
+    #   DEBUG: "false"
+
+    #   # Database URL - Inject via environment variable or Docker secrets
+    #   DATABASE_URL: ${DATABASE_URL}
+
+    #   # Security configuration - Inject via environment variables or secrets
+    #   ARCJET_KEY: ${ARCJET_KEY}
+    #   JWT_SECRET: ${JWT_SECRET}
+    #   JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+
+    #   # Optional: Additional production environment variables
+    #   TZ: UTC
+    volumes:
+      # Mount logs directory for persistence and monitoring
+      - app_logs:/app/logs
+      # Optional: Mount configuration files
+      # - ./config/production:/app/config:ro
+    networks:
+      - acquisitions-network
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    read_only: false # Set to true if your app doesn't write files
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  #============================================================================
+  # Optional: Reverse Proxy (Nginx) for production
+  #============================================================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: acquisitions-nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      # SSL certificates (if using HTTPS)
+      # - ./certs:/etc/ssl/certs:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - acquisitions-network
+    depends_on:
+      app:
+        condition: service_healthy
+    profiles:
+      - proxy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+  #============================================================================
+  # Optional: Monitoring and Logging
+  #============================================================================
+
+  # Log aggregation
+  fluentd:
+    image: fluent/fluentd:v1.16-1
+    container_name: acquisitions-fluentd
+    volumes:
+      - ./docker/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+      - app_logs:/app/logs:ro
+    networks:
+      - acquisitions-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+  # Metrics collection
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: acquisitions-prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - acquisitions-network
+    profiles:
+      - monitoring
+    restart: unless-stopped
+
+#==============================================================================
+# Networks
+#==============================================================================
+networks:
+  acquisitions-network:
+    driver: bridge
+    name: acquisitions-production-network
+
+#==============================================================================
+# Volumes
+#==============================================================================
+volumes:
+  app_logs:
+    name: acquisitions-app-logs
+  nginx_logs:
+    name: acquisitions-nginx-logs
+  prometheus_data:
+    name: acquisitions-prometheus-data
