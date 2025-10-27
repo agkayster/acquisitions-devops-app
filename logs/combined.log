@@ -239,3 +239,5 @@
 {"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
 {"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
 {"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using Neon serverless HTTP client","service":"acquisitions-api"}
