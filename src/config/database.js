@@ -9,7 +9,7 @@ import logger from '#config/logger.js';
 /**
  * Database configuration that works with both Neon Cloud and Neon Local
  * - In production: Uses Neon serverless HTTP client
- * - In development: Can use either HTTP client or direct PostgreSQL connection
+ * - In development: Uses direct PostgreSQL connection
  */
 
 const DATABASE_URL = process.env.DATABASE_URL;
@@ -23,33 +23,33 @@ logger.info(`Database configuration loaded for ${NODE_ENV} environment`);
 
 let db, sql;
 
-// Check if we're using a direct PostgreSQL connection (Neon Local)
-if (DATABASE_URL.startsWith('postgres://') && NODE_ENV === 'development') {
+// Use direct PostgreSQL connection for local development
+if (NODE_ENV === 'development') {
   logger.info('Using direct PostgreSQL connection for development');
-  
+
   // Direct PostgreSQL connection for Neon Local
   const pool = new Pool({
     connectionString: DATABASE_URL,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
+    ssl: false, // IMPORTANT: Disable SSL for local development
   });
-  
+
   // Test the connection
   pool.on('connect', () => {
     logger.info('Connected to Neon Local PostgreSQL database');
   });
-  
-  pool.on('error', (err) => {
+
+  pool.on('error', err => {
     logger.error('PostgreSQL pool error:', err);
   });
-  
+
   db = drizzlePg(pool, { logger: true });
   sql = pool; // For raw queries if needed
 } else {
-  logger.info('Using Neon serverless HTTP client');
-  
-  // Neon serverless HTTP client (production or cloud development)
+  // Production: Use Neon serverless HTTP client
+  logger.info('Using Neon serverless HTTP client for production');
   sql = neon(DATABASE_URL);
   db = drizzle(sql, { logger: true });
 }
@@ -57,7 +57,7 @@ if (DATABASE_URL.startsWith('postgres://') && NODE_ENV === 'development') {
 // Health check function
 export async function checkDatabaseConnection() {
   try {
-    if (NODE_ENV === 'development' && DATABASE_URL.startsWith('postgres://')) {
+    if (NODE_ENV === 'development') {
       // PostgreSQL health check
       await sql.query('SELECT 1');
     } else {
