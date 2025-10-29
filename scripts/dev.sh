@@ -1,53 +1,88 @@
 #!/bin/bash
-
-# Development startup script for Acquisition App with Neon Local
-# This script starts the application in development mode with Neon Local
-
 echo "🚀 Starting Acquisition App in Development Mode"
 echo "================================================"
 
 # Check if .env.development exists
 if [ ! -f .env.development ]; then
     echo "❌ Error: .env.development file not found!"
-    echo "   Please copy .env.development from the template and update with your Neon credentials."
     exit 1
 fi
 
 # Check if Docker is running
 if ! docker info >/dev/null 2>&1; then
     echo "❌ Error: Docker is not running!"
-    echo "   Please start Docker Desktop and try again."
     exit 1
 fi
 
-# Create .neon_local directory if it doesn't exist
-mkdir -p .neon_local
-
-# Add .neon_local to .gitignore if not already present
-if ! grep -q ".neon_local/" .gitignore 2>/dev/null; then
-    echo ".neon_local/" >> .gitignore
-    echo "✅ Added .neon_local/ to .gitignore"
-fi
+# Clean up any existing containers and volumes
+echo "🧹 Cleaning up existing containers..."
+docker compose -f docker-compose.dev.yml down -v
 
 echo "📦 Building and starting development containers..."
-echo "   - Neon Local proxy will create an ephemeral database branch"
-echo "   - Application will run with hot reload enabled"
-echo ""
+docker compose -f docker-compose.dev.yml up -d
 
-# Run migrations with Drizzle
-echo "📜 Applying latest schema with Drizzle..."
+# Wait for PostgreSQL to be healthy
+echo "⏳ Waiting for database to be ready..."
+timeout=60
+elapsed=0
+
+while [ $elapsed -lt $timeout ]; do
+    if docker compose -f docker-compose.dev.yml exec -T neon-local pg_isready -U neondb_owner -d neondb >/dev/null 2>&1; then
+        echo "✅ Database is ready!"
+        sleep 2
+        break
+    fi
+    sleep 2
+    elapsed=$((elapsed + 2))
+    echo "   Waiting... ${elapsed}s/${timeout}s"
+done
+
+if [ $elapsed -ge $timeout ]; then
+    echo "❌ Database failed to start!"
+    docker compose -f docker-compose.dev.yml logs neon-local
+    exit 1
+fi
+
+# Initialize database user and permissions
+echo "👤 Setting up database user and permissions..."
+docker compose -f docker-compose.dev.yml exec -T neon-local psql -U neondb_owner -d neondb <<-EOSQL
+    -- Create the application user if it doesn't exist
+    DO \$\$
+    BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'neondb_owner') THEN
+            CREATE USER neondb_owner WITH PASSWORD 'localpassword' CREATEDB;
+        END IF;
+    END
+    \$\$;
+    
+    -- Grant privileges
+    GRANT ALL PRIVILEGES ON DATABASE neondb TO neondb_owner;
+    GRANT ALL ON SCHEMA public TO neondb_owner;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO neondb_owner;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO neondb_owner;
+EOSQL
+
+echo "✅ Database user configured!"
+
+# For migrations, use localhost since we're running from host
+export DATABASE_URL="postgresql://neondb_owner:localpassword@localhost:5432/neondb"
+
+# Run migrations
+echo "📜 Running database migrations..."
 npm run db:migrate
 
-# Wait for the database to be ready
-echo "⏳ Waiting for the database to be ready..."
-docker compose exec neon-local psql -U neon -d neondb -c 'SELECT 1'
+if [ $? -ne 0 ]; then
+    echo "❌ Migration failed!"
+    exit 1
+fi
 
-# Start development environment
-docker compose -f docker-compose.dev.yml up --build
+echo "✅ Migrations completed successfully!"
 
 echo ""
-echo "🎉 Development environment started!"
-echo "   Application: http://localhost:5173"
-echo "   Database: postgres://neon:npg@localhost:5432/neondb"
+echo "🎉 Development environment is ready!"
+echo "   Application: http://localhost:3000"
+echo "   Database: postgresql://neondb_owner:localpassword@localhost:5432/neondb"
+echo "   Adminer (DB GUI): http://localhost:8080 (run with --profile tools)"
 echo ""
-echo "To stop the environment, press Ctrl+C or run: docker compose down"
+echo "📋 Showing logs (Ctrl+C to exit, containers will keep running):"
+docker compose -f docker-compose.dev.yml logs -f

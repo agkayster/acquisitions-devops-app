@@ -47,15 +47,15 @@ app.get('/api', arcjetMiddleware(aj), (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: {
-        signUp: '/api/auth/sign-up',
-        signIn: '/api/auth/sign-in',
-        signOut: '/api/auth/sign-out',
+        signUp: '/api/sign-up',
+        signIn: '/api/sign-in',
+        signOut: '/api/sign-out',
       },
       healthCheck: '/health',
     },
   });
 });
 
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 
 export default app;
