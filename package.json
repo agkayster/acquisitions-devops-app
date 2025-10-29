@@ -33,7 +33,8 @@
     "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
     "docker:build": "docker build -t acquisitions-app .",
     "docker:clean": "docker system prune -f && docker volume prune -f",
-    "dev:docker": "sh ./scripts/dev.sh"
+    "dev:docker": "sh ./scripts/dev.sh",
+    "prod:docker": "sh ./scripts/prod.sh"
   },
   "keywords": [],
   "author": "",
