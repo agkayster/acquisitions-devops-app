@@ -6,19 +6,24 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from '#routes/auth.routes.js';
+import usersRoutes from '#routes/users.routes.js';
 import { aj, ajHealth } from '#config/arcjet.js';
 import { arcjetMiddleware } from '#middleware/arcjet.middleware.js';
 
 const app = express();
 
 app.use(helmet());
+
 app.use(cors());
+
 app.use(
   express.json()
 ); /* parses json objects through its requests for use in req.body */
+
 app.use(
   express.urlencoded({ extended: true })
 ); /* allows you to parse incoming requests with url encoded payloads based on body parser */
+
 app.use(
   cookieParser()
 ); /* parse Cookie header and populate req.cookies with an object keyed by the cookie names */
@@ -47,15 +52,19 @@ app.get('/api', arcjetMiddleware(aj), (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: {
-        signUp: '/api/sign-up',
-        signIn: '/api/sign-in',
-        signOut: '/api/sign-out',
+        signUp: '/api/auth/sign-up',
+        signIn: '/api/auth/sign-in',
+        signOut: '/api/auth/sign-out',
       },
       healthCheck: '/health',
     },
   });
 });
 
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use(
+  '/api/users',
+  /* protect users routes later with auth middleware */ usersRoutes
+);
 
 export default app;

@@ -612,3 +612,53 @@
 {"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:15:00:38 +0000] \"GET /api HTTP/1.1\" 200 184 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
 {"conclusion":"ALLOW","id":"req_01k8r7rnzje228x9szqsbrm81k","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/health","reason":{"allowed":[],"denied":[],"spoofed":false,"type":"BOT","verified":false},"service":"acquisitions-api","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"}
 {"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:15:00:46 +0000] \"GET /health HTTP/1.1\" 200 78 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8rebp8ze2dvsq3ehd7d6gs0","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"error","message":"Error authenticating user: User with this email does not exist","service":"acquisitions-api","stack":"Error: User with this email does not exist\n    at authenticateUser (file:///app/src/services/auth.service.js:41:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async signin (file:///app/src/controllers/auth.controller.js:76:18)"}
+{"level":"error","message":"Sign in error: User with this email does not exist","service":"acquisitions-api","stack":"Error: User with this email does not exist\n    at authenticateUser (file:///app/src/services/auth.service.js:41:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async signin (file:///app/src/controllers/auth.controller.js:76:18)"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:16:56:01 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 401 37 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8recw5meb786wqck434d3gh","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated successfully: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:16:56:39 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 123 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ERROR","id":"req_01k8red1hdeb782m2d3nh20x3n","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-out","reason":{"message":"Unable to validate request details - invalid request for rule - missing email","type":"ERROR"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"User signed out successfully","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:16:56:45 +0000] \"POST /api/auth/sign-out HTTP/1.1\" 200 42 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"Fetching all users...","service":"acquisitions-api"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:17:33:10 +0000] \"GET /api/users/ HTTP/1.1\" 200 219 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k8rggkgqeb8vzptdn5dqzxga","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.0"}
+{"level":"info","message":"New user: dorgu@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, dorgu@gmail.com, Patrick Dorgu, user","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:17:33:38 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 121 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
+{"level":"info","message":"Fetching all users...","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [29/Oct/2025:17:33:43 +0000] \"GET /api/users/ HTTP/1.1\" 200 371 \"-\" \"PostmanRuntime/7.49.0\"","service":"acquisitions-api"}
