@@ -9,7 +9,6 @@ import authRoutes from '#routes/auth.routes.js';
 import usersRoutes from '#routes/users.routes.js';
 import { aj, ajHealth } from '#config/arcjet.js';
 import { arcjetMiddleware } from '#middleware/arcjet.middleware.js';
-import { error } from 'winston';
 
 const app = express();
 
