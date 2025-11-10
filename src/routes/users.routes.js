@@ -7,14 +7,14 @@ import {
 } from '#controllers/users.controller.js';
 import {
   authenticate,
-  // isAdmin,
+  isAdmin,
   isOwnerOrAdmin,
 } from '#middleware/auth.middleware.js';
 
 const router = express.Router();
 
 /* GET /users/ */
-router.get('/', authenticate, fetchAllUsers);
+router.get('/', authenticate, isAdmin, fetchAllUsers);
 
 /* GET /users/:id - Get details of specific user */
 router.get('/:id', authenticate, isOwnerOrAdmin, fetchUserById);
