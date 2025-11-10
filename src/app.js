@@ -9,6 +9,7 @@ import authRoutes from '#routes/auth.routes.js';
 import usersRoutes from '#routes/users.routes.js';
 import { aj, ajHealth } from '#config/arcjet.js';
 import { arcjetMiddleware } from '#middleware/arcjet.middleware.js';
+import { error } from 'winston';
 
 const app = express();
 
@@ -66,5 +67,9 @@ app.use(
   '/api/users',
   /* protect users routes later with auth middleware */ usersRoutes
 );
+
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route/Endpoint not found' });
+});
 
 export default app;
