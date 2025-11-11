@@ -1242,3 +1242,61 @@
 {"conclusion":"ERROR","id":"lreq_01k9q92fc2ecw8xpnfa8t2k9z1","ip":"::ffff:127.0.0.1","level":"info","message":"Arcjet decision","path":"/api","reason":{"message":"Failed to build fingerprint - unable to generate fingerprint: error generating identifier - requested `ip` characteristic but the `ip` value was empty","type":"ERROR"},"service":"acquisitions-api"}
 {"level":"info","message":"::ffff:127.0.0.1 - - [10/Nov/2025:16:20:03 +0000] \"GET /api HTTP/1.1\" 200 199 \"-\" \"-\"","service":"acquisitions-api"}
 {"level":"info","message":"::ffff:127.0.0.1 - - [10/Nov/2025:16:20:03 +0000] \"GET /nonexistent HTTP/1.1\" 404 36 \"-\" \"-\"","service":"acquisitions-api"}
+{"conclusion":"ERROR","id":"lreq_01k9sg67arfevb062k3je99swp","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"message":"[deadline_exceeded] the operation timed out","type":"ERROR"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"New user: victor@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, victor@gmail.com, Victor Osimehin, user","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:02:55 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 124 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ERROR","id":"lreq_01k9sgbeekfevb062wq3rkasn1","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"message":"[deadline_exceeded] the operation timed out","type":"ERROR"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"error","message":"Error authenticating user: User with this email does not exist","service":"acquisitions-api","stack":"Error: User with this email does not exist\n    at authenticateUser (file:///app/src/services/auth.service.js:41:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async signin (file:///app/src/controllers/auth.controller.js:76:18)"}
+{"level":"error","message":"Sign in error: User with this email does not exist","service":"acquisitions-api","stack":"Error: User with this email does not exist\n    at authenticateUser (file:///app/src/services/auth.service.js:41:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async signin (file:///app/src/controllers/auth.controller.js:76:18)"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:05:46 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 401 37 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k9sgcdvjeq7axacbrm5s8es4","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"New user: alex@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, alex@gmail.com, Alex Iwobi, admin","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:06:18 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 118 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k9sgd3wked4tfah6mxr6p1c6","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-up","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"New user: patrick@gmail.com created Successfully!","service":"acquisitions-api"}
+{"level":"info","message":"User registered successfully:, patrick@gmail.com, Patrick Dorgu, user","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:06:42 +0000] \"POST /api/auth/sign-up HTTP/1.1\" 201 123 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ALLOW","id":"req_01k9sgdj0seq7930bbjzdfpvha","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"emailTypes":[],"type":"EMAIL"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"User authenticated successfully: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:06:55 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 117 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Admin access granted: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Fetching all users...","service":"acquisitions-api"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:08:00 +0000] \"GET /api/users/ HTTP/1.1\" 200 522 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Access granted to user: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Deleting user with ID: 3","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:08:22 +0000] \"DELETE /api/users/3 HTTP/1.1\" 200 106 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Admin access granted: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Fetching all users...","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:08:30 +0000] \"GET /api/users/ HTTP/1.1\" 200 368 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ERROR","id":"lreq_01k9sgh4knfevb06331wswqgjb","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"message":"[deadline_exceeded] the operation timed out","type":"ERROR"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"User authenticated successfully: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:08:53 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 123 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:09:39 +0000] \"DELETE /api/users/2 HTTP/1.1\" 403 74 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Access granted to user: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Deleting user with ID: 1","service":"acquisitions-api"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:09:54 +0000] \"DELETE /api/users/1 HTTP/1.1\" 200 107 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: victor@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:10:06 +0000] \"GET /api/users/ HTTP/1.1\" 403 63 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"conclusion":"ERROR","id":"lreq_01k9sgkw3hfevb0638kzpqw9c5","ip":"::ffff:192.168.65.1","level":"info","message":"Arcjet decision","path":"/sign-in","reason":{"message":"[deadline_exceeded] the operation timed out","type":"ERROR"},"service":"acquisitions-api","userAgent":"PostmanRuntime/7.49.1"}
+{"level":"info","message":"User authenticated successfully: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"User signed in successfully: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:10:22 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 200 117 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
+{"level":"info","message":"User authenticated: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Admin access granted: alex@gmail.com","service":"acquisitions-api"}
+{"level":"info","message":"Fetching all users...","service":"acquisitions-api"}
+{"level":"info","message":"Connected to Neon Local PostgreSQL database","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [11/Nov/2025:13:11:10 +0000] \"GET /api/users/ HTTP/1.1\" 200 213 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api"}
