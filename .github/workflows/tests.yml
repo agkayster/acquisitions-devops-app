@@ -1,0 +1,189 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    # Test matrix for different environments
+    strategy:
+      matrix:
+        node-version: ['20.x']
+        
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: --experimental-vm-modules
+      DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+      ARCJET_KEY: ajkey_test_key_for_ci
+      JWT_SECRET: test_jwt_secret_for_ci_testing_only
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for PostgreSQL
+        run: |
+          timeout 60s bash -c 'until pg_isready -h localhost -p 5432 -U test_user; do sleep 2; done'
+
+      - name: Run database migrations (if exists)
+        run: |
+          if npm run db:migrate --if-present; then
+            echo "Database migrations completed successfully"
+          else
+            echo "No migrations to run or migrations failed"
+          fi
+        continue-on-error: true
+
+      - name: Run tests
+        id: test
+        run: |
+          echo "Running tests with coverage..."
+          npm test -- --coverage --verbose --passWithNoTests 2>&1 | tee test-output.txt
+          echo "test_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: |
+            coverage/
+            test-output.txt
+          retention-days: 30
+
+      - name: Annotate test failures
+        if: steps.test.outputs.test_exit_code != '0'
+        run: |
+          echo "::error title=Test Failures::Some tests failed. Check the test output for details."
+          
+          if [ -f test-output.txt ]; then
+            echo "Processing test output for annotations..."
+            
+            # Look for Jest test failures and create annotations
+            while IFS= read -r line; do
+              # Check for failing test lines
+              if [[ $line == *"FAIL"* ]] && [[ $line == *".test."* ]]; then
+                echo "::error::Test failure: $line"
+              elif [[ $line == *"✓"* ]] && [[ $line == *"failing"* ]]; then
+                echo "::error::$line"
+              elif [[ $line == *"Expected:"* ]] || [[ $line == *"Received:"* ]]; then
+                echo "::warning::$line"
+              elif [[ $line == *"at"* ]] && [[ $line == *".test."* ]]; then
+                echo "::notice::$line"
+              fi
+            done < test-output.txt
+          fi
+
+      - name: Parse test results
+        id: test-results
+        run: |
+          if [ -f test-output.txt ]; then
+            # Extract test summary information
+            TESTS_RUN=$(grep -E "Tests:|passed|failed" test-output.txt | tail -1 | grep -oE '[0-9]+' | head -1 || echo "0")
+            TESTS_PASSED=$(grep -oE '[0-9]+ passed' test-output.txt | grep -oE '[0-9]+' || echo "0")
+            TESTS_FAILED=$(grep -oE '[0-9]+ failed' test-output.txt | grep -oE '[0-9]+' || echo "0")
+            
+            # Extract coverage information
+            COVERAGE_LINES=$(grep -E "Lines.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
+            COVERAGE_FUNCTIONS=$(grep -E "Functions.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
+            COVERAGE_BRANCHES=$(grep -E "Branches.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
+            COVERAGE_STATEMENTS=$(grep -E "Statements.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
+            
+            # Set outputs
+            echo "tests_run=$TESTS_RUN" >> $GITHUB_OUTPUT
+            echo "tests_passed=$TESTS_PASSED" >> $GITHUB_OUTPUT  
+            echo "tests_failed=$TESTS_FAILED" >> $GITHUB_OUTPUT
+            echo "coverage_lines=$COVERAGE_LINES" >> $GITHUB_OUTPUT
+            echo "coverage_functions=$COVERAGE_FUNCTIONS" >> $GITHUB_OUTPUT
+            echo "coverage_branches=$COVERAGE_BRANCHES" >> $GITHUB_OUTPUT
+            echo "coverage_statements=$COVERAGE_STATEMENTS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate GitHub step summary
+        if: always()
+        run: |
+          echo "## Test Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Test status
+          if [ "${{ steps.test.outputs.test_exit_code }}" = "0" ]; then
+            echo "✅ **Status**: All tests passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status**: Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Test statistics
+          echo "### Test Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Run | ${{ steps.test-results.outputs.tests_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | ${{ steps.test-results.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Failed | ${{ steps.test-results.outputs.tests_failed }} |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Coverage information
+          echo "### Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage Type | Percentage |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines | ${{ steps.test-results.outputs.coverage_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Functions | ${{ steps.test-results.outputs.coverage_functions }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branches | ${{ steps.test-results.outputs.coverage_branches }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Statements | ${{ steps.test-results.outputs.coverage_statements }} |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Detailed coverage report is available in the artifacts." >> $GITHUB_STEP_SUMMARY
+          
+          # Add failure details if tests failed
+          if [ "${{ steps.test.outputs.test_exit_code }}" != "0" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Test Failures" >> $GITHUB_STEP_SUMMARY
+            echo "Some tests failed. Please check the test output above and fix the failing tests." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Troubleshooting Tips:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Review the test output for specific error messages" >> $GITHUB_STEP_SUMMARY
+            echo "- Check if all required environment variables are set" >> $GITHUB_STEP_SUMMARY
+            echo "- Ensure database migrations are up to date" >> $GITHUB_STEP_SUMMARY
+            echo "- Run tests locally: \`npm test\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check final test status
+        run: |
+          if [ "${{ steps.test.outputs.test_exit_code }}" != "0" ]; then
+            echo "Tests failed. Please fix the failing tests before merging."
+            exit 1
+          fi
+          echo "All tests passed! ✅"

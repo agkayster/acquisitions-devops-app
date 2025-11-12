@@ -1,6 +1,10 @@
 # Acquisitions DevOps App
 
-> A modern Express.js API with comprehensive security, database management, and Docker deployment.
+[![Lint and Format](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/lint-and-format.yml/badge.svg)](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/lint-and-format.yml)
+[![Tests](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/tests.yml/badge.svg)](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/tests.yml)
+[![Docker Build and Push](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/agkayster/acquisitions-devops-app/actions/workflows/docker-build-and-push.yml)
+
+> A modern Express.js API with comprehensive security, database management, Docker deployment, and automated CI/CD pipeline.
 
 ## 🚀 Quick Start
 
@@ -40,6 +44,7 @@ make prod-up
 - [🗄️ Database](#️-database)
 - [🔒 Security](#-security)
 - [🚢 Deployment](#-deployment)
+- [🔄 CI/CD Pipeline](#-cicd-pipeline)
 - [📚 API Documentation](#-api-documentation)
 
 ## 🏗️ Architecture
@@ -273,6 +278,54 @@ JWT_EXPIRES_IN=1h
    ```bash
    docker compose -f docker-compose.prod.yml --profile proxy --profile monitoring up -d
    ```
+
+## 🔄 CI/CD Pipeline
+
+The project includes a comprehensive GitHub Actions CI/CD pipeline with three main workflows:
+
+### 🔍 Code Quality (`lint-and-format.yml`)
+- **Triggers:** Push/PR to `main` and `staging` branches
+- **Features:**
+  - ESLint code quality checks
+  - Prettier formatting validation
+  - Auto-fix suggestions
+  - Clear error annotations
+
+### 🧪 Testing (`tests.yml`)
+- **Triggers:** Push/PR to `main` and `staging` branches  
+- **Features:**
+  - Jest test runner with coverage
+  - PostgreSQL integration testing
+  - Coverage report artifacts (30-day retention)
+  - Detailed test result summaries
+
+### 🐳 Docker Build (`docker-build-and-push.yml`)
+- **Triggers:** Push to `main` branch, manual dispatch
+- **Features:**
+  - Multi-platform builds (amd64/arm64)
+  - Docker Hub publishing
+  - Advanced tagging strategies
+  - Build caching optimization
+
+### Required GitHub Secrets
+```bash
+DOCKER_USERNAME=your-dockerhub-username
+DOCKER_PASSWORD=your-dockerhub-password
+```
+
+### Local CI Testing
+```bash
+# Run all checks locally
+npm run lint && npm run format:check && npm test
+
+# Fix issues automatically  
+npm run lint:fix && npm run format
+
+# Test Docker build
+docker build --target production .
+```
+
+For detailed CI/CD documentation, see [.github/workflows/README.md](./.github/workflows/README.md).
 
 ## 📚 API Documentation
 

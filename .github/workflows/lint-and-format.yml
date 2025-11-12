@@ -1,0 +1,100 @@
+name: Lint and Format
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  lint-and-format:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: eslint
+        run: |
+          echo "Running ESLint..."
+          npm run lint 2>&1 | tee eslint-output.txt
+          echo "eslint_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Run Prettier Check
+        id: prettier
+        run: |
+          echo "Running Prettier check..."
+          npm run format:check 2>&1 | tee prettier-output.txt
+          echo "prettier_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Annotate ESLint Issues
+        if: steps.eslint.outputs.eslint_exit_code != '0'
+        run: |
+          echo "::error title=ESLint Issues Found::ESLint found code quality issues. Run 'npm run lint:fix' to automatically fix some issues."
+          if [ -f eslint-output.txt ]; then
+            while IFS= read -r line; do
+              if [[ $line == *".js"* ]] || [[ $line == *".mjs"* ]] || [[ $line == *".ts"* ]]; then
+                echo "::warning::$line"
+              fi
+            done < eslint-output.txt
+          fi
+
+      - name: Annotate Prettier Issues
+        if: steps.prettier.outputs.prettier_exit_code != '0'
+        run: |
+          echo "::error title=Prettier Issues Found::Code formatting issues detected. Run 'npm run format' to automatically fix formatting issues."
+          if [ -f prettier-output.txt ]; then
+            while IFS= read -r line; do
+              if [[ $line == *"Code style issues found"* ]] || [[ $line == *"[warn]"* ]]; then
+                echo "::warning::$line"
+              fi
+            done < prettier-output.txt
+          fi
+
+      - name: Create summary
+        run: |
+          echo "## Code Quality Check Results 🔍" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.eslint.outputs.eslint_exit_code }}" = "0" ]; then
+            echo "✅ **ESLint**: No issues found" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **ESLint**: Issues found - run \`npm run lint:fix\` to fix automatically" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.prettier.outputs.prettier_exit_code }}" = "0" ]; then
+            echo "✅ **Prettier**: Code formatting is correct" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Prettier**: Formatting issues found - run \`npm run format\` to fix automatically" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Fix Commands" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Fix ESLint issues automatically" >> $GITHUB_STEP_SUMMARY
+          echo "npm run lint:fix" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Fix formatting issues automatically" >> $GITHUB_STEP_SUMMARY
+          echo "npm run format" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check final status
+        run: |
+          if [ "${{ steps.eslint.outputs.eslint_exit_code }}" != "0" ] || [ "${{ steps.prettier.outputs.prettier_exit_code }}" != "0" ]; then
+            echo "Code quality checks failed. Please fix the issues and try again."
+            exit 1
+          fi
+          echo "All code quality checks passed! ✅"
