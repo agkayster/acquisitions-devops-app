@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['20.x']
-        
+
     env:
       NODE_ENV: test
       NODE_OPTIONS: --experimental-vm-modules
@@ -86,7 +86,7 @@ jobs:
         if: steps.test.outputs.test_exit_code != '0'
         run: |
           echo "::error title=Test Failures::Some tests failed. Check the test output for details."
-          
+
           if [ -f test-output.txt ]; then
             echo "Processing test output for annotations..."
             
@@ -135,16 +135,16 @@ jobs:
         run: |
           echo "## Test Results 🧪" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Test status
           if [ "${{ steps.test.outputs.test_exit_code }}" = "0" ]; then
             echo "✅ **Status**: All tests passed!" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Status**: Some tests failed" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Test statistics
           echo "### Test Statistics" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
@@ -152,9 +152,9 @@ jobs:
           echo "| Tests Run | ${{ steps.test-results.outputs.tests_run }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Tests Passed | ${{ steps.test-results.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Tests Failed | ${{ steps.test-results.outputs.tests_failed }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Coverage information
           echo "### Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "| Coverage Type | Percentage |" >> $GITHUB_STEP_SUMMARY
@@ -163,10 +163,10 @@ jobs:
           echo "| Functions | ${{ steps.test-results.outputs.coverage_functions }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Branches | ${{ steps.test-results.outputs.coverage_branches }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Statements | ${{ steps.test-results.outputs.coverage_statements }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📊 Detailed coverage report is available in the artifacts." >> $GITHUB_STEP_SUMMARY
-          
+
           # Add failure details if tests failed
           if [ "${{ steps.test.outputs.test_exit_code }}" != "0" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY

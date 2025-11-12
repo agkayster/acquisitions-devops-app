@@ -9,12 +9,14 @@
 ## 🚀 Quick Start
 
 ### Local Development (Traditional)
+
 ```bash
 npm install
 npm run dev
 ```
 
 ### Docker Development (Recommended)
+
 ```bash
 # Using npm scripts
 npm run docker:dev
@@ -24,6 +26,7 @@ make dev-up
 ```
 
 ### Docker Production
+
 ```bash
 # Set environment variables
 export DATABASE_URL="your-neon-cloud-url"
@@ -50,6 +53,7 @@ make prod-up
 ## 🏗️ Architecture
 
 ### Technology Stack
+
 - **Runtime**: Node.js 20 with ES modules
 - **Framework**: Express.js 5.1.0
 - **Database**: PostgreSQL via Neon (Cloud/Local)
@@ -61,6 +65,7 @@ make prod-up
 - **Containerization**: Docker with multi-stage builds
 
 ### Project Structure
+
 ```
 src/
 ├── app.js           # Express app configuration
@@ -82,11 +87,13 @@ src/
 ## 🔧 Development Setup
 
 ### Prerequisites
+
 - Node.js 20+
 - Docker & Docker Compose
 - npm or yarn
 
 ### Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -103,6 +110,7 @@ npm run dev
 ```
 
 ### Available Scripts
+
 ```bash
 npm run dev          # Start development server with file watching
 npm run start        # Start production server
@@ -118,6 +126,7 @@ npm run db:studio    # Open Drizzle Studio (database GUI)
 ## 🐳 Docker Setup
 
 ### Development Environment
+
 Uses **Neon Local** (PostgreSQL) for local database development:
 
 ```bash
@@ -139,6 +148,7 @@ make dev-down
 ```
 
 ### Production Environment
+
 Uses **Neon Cloud** (serverless) for production database:
 
 ```bash
@@ -160,6 +170,7 @@ make prod-logs
 ```
 
 ### Docker Commands Reference
+
 ```bash
 # Development
 make dev-up         # Start development environment
@@ -189,18 +200,21 @@ make help           # Show all available commands
 ## 🗄️ Database
 
 ### Development Database (Neon Local)
+
 - **Type**: PostgreSQL 15 in Docker container
 - **Connection**: Direct PostgreSQL connection
 - **URL**: `postgres://neondb_owner:localpassword@localhost:5432/main`
 - **Features**: Persistent data, GUI access via Adminer
 
 ### Production Database (Neon Cloud)
+
 - **Type**: Neon serverless PostgreSQL
 - **Connection**: HTTP-based Neon client
 - **URL**: Your Neon Cloud connection string
 - **Features**: Serverless scaling, automatic backups, branching
 
 ### Database Operations
+
 ```bash
 # Generate migrations after schema changes
 npm run db:generate
@@ -218,6 +232,7 @@ make dev-db-shell
 ## 🔒 Security
 
 ### Arcjet Protection
+
 - **Rate Limiting**: Different limits per endpoint type
   - Global: 100 requests/minute
   - Auth: 5 requests/15 minutes
@@ -228,11 +243,13 @@ make dev-db-shell
 - **Shield**: Protection against common web attacks
 
 ### Authentication
+
 - **JWT Tokens**: Secure token-based authentication
 - **Password Hashing**: bcrypt with 10 salt rounds
 - **Secure Cookies**: HTTP-only cookies for token storage
 
 ### Additional Security
+
 - **Helmet**: Security headers
 - **CORS**: Cross-origin request handling
 - **Input Validation**: Zod schema validation
@@ -243,6 +260,7 @@ make dev-db-shell
 ### Environment Variables
 
 #### Required for Production
+
 ```env
 NODE_ENV=production
 DATABASE_URL=postgresql://user:pass@host/db
@@ -251,6 +269,7 @@ JWT_SECRET=your-secure-jwt-secret-256-bits
 ```
 
 #### Optional
+
 ```env
 PORT=8000
 LOG_LEVEL=info
@@ -260,16 +279,19 @@ JWT_EXPIRES_IN=1h
 ### Docker Deployment Options
 
 1. **Basic Production**
+
    ```bash
    docker compose -f docker-compose.prod.yml up -d
    ```
 
 2. **With Reverse Proxy (Nginx)**
+
    ```bash
    docker compose -f docker-compose.prod.yml --profile proxy up -d
    ```
 
 3. **With Monitoring Stack**
+
    ```bash
    docker compose -f docker-compose.prod.yml --profile monitoring up -d
    ```
@@ -284,6 +306,7 @@ JWT_EXPIRES_IN=1h
 The project includes a comprehensive GitHub Actions CI/CD pipeline with three main workflows:
 
 ### 🔍 Code Quality (`lint-and-format.yml`)
+
 - **Triggers:** Push/PR to `main` and `staging` branches
 - **Features:**
   - ESLint code quality checks
@@ -292,7 +315,8 @@ The project includes a comprehensive GitHub Actions CI/CD pipeline with three ma
   - Clear error annotations
 
 ### 🧪 Testing (`tests.yml`)
-- **Triggers:** Push/PR to `main` and `staging` branches  
+
+- **Triggers:** Push/PR to `main` and `staging` branches
 - **Features:**
   - Jest test runner with coverage
   - PostgreSQL integration testing
@@ -300,6 +324,7 @@ The project includes a comprehensive GitHub Actions CI/CD pipeline with three ma
   - Detailed test result summaries
 
 ### 🐳 Docker Build (`docker-build-and-push.yml`)
+
 - **Triggers:** Push to `main` branch, manual dispatch
 - **Features:**
   - Multi-platform builds (amd64/arm64)
@@ -308,17 +333,19 @@ The project includes a comprehensive GitHub Actions CI/CD pipeline with three ma
   - Build caching optimization
 
 ### Required GitHub Secrets
+
 ```bash
 DOCKER_USERNAME=your-dockerhub-username
 DOCKER_PASSWORD=your-dockerhub-password
 ```
 
 ### Local CI Testing
+
 ```bash
 # Run all checks locally
 npm run lint && npm run format:check && npm test
 
-# Fix issues automatically  
+# Fix issues automatically
 npm run lint:fix && npm run format
 
 # Test Docker build
@@ -332,24 +359,31 @@ For detailed CI/CD documentation, see [.github/workflows/README.md](./.github/wo
 ### Endpoints
 
 #### Health Check
+
 ```
 GET /health
 ```
+
 Returns server status and uptime.
 
 #### Root
+
 ```
 GET /
 ```
+
 Basic API greeting.
 
 #### API Information
+
 ```
 GET /api
 ```
+
 API documentation and available endpoints.
 
 #### Authentication
+
 ```
 POST /api/auth/sign-up
 POST /api/auth/sign-in
@@ -357,6 +391,7 @@ POST /api/auth/sign-out
 ```
 
 ### Testing API
+
 ```bash
 # Test health endpoint
 curl http://localhost:8000/health
@@ -387,17 +422,20 @@ node test-arcjet.js
 ### Common Issues
 
 1. **Port 8000 already in use**
+
    ```bash
    lsof -ti:8000 | xargs kill -9
    ```
 
 2. **Docker build fails**
+
    ```bash
    make clean
    docker system prune -f
    ```
 
 3. **Database connection issues**
+
    ```bash
    make dev-logs
    # Check database container status

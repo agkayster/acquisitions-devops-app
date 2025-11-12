@@ -68,19 +68,19 @@ jobs:
         run: |
           echo "## Code Quality Check Results 🔍" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ steps.eslint.outputs.eslint_exit_code }}" = "0" ]; then
             echo "✅ **ESLint**: No issues found" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **ESLint**: Issues found - run \`npm run lint:fix\` to fix automatically" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           if [ "${{ steps.prettier.outputs.prettier_exit_code }}" = "0" ]; then
             echo "✅ **Prettier**: Code formatting is correct" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Prettier**: Formatting issues found - run \`npm run format\` to fix automatically" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Fix Commands" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY

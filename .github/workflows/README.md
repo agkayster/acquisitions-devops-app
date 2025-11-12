@@ -7,20 +7,23 @@ This directory contains GitHub Actions workflows for the Acquisitions DevOps App
 ### 1. Lint and Format (`lint-and-format.yml`)
 
 **Triggers:**
+
 - Push to `main` and `staging` branches
 - Pull requests to `main` and `staging` branches
 
 **Purpose:** Ensures code quality and consistent formatting across the codebase.
 
 **Features:**
+
 - ✅ Node.js 20.x with npm caching
 - ✅ ESLint code quality checks
-- ✅ Prettier formatting validation  
+- ✅ Prettier formatting validation
 - ✅ Clear annotations for issues found
 - ✅ Auto-fix suggestions in workflow summary
 - ✅ Fails workflow if issues are detected
 
 **Environment:**
+
 - Node.js 20.x
 - Ubuntu Latest
 - NPM package caching enabled
@@ -30,12 +33,14 @@ This directory contains GitHub Actions workflows for the Acquisitions DevOps App
 ### 2. Tests (`tests.yml`)
 
 **Triggers:**
+
 - Push to `main` and `staging` branches
 - Pull requests to `main` and `staging` branches
 
 **Purpose:** Runs comprehensive tests with coverage reporting and database integration.
 
 **Features:**
+
 - ✅ Node.js 20.x with npm caching
 - ✅ PostgreSQL 15 test database service
 - ✅ Jest test runner with coverage
@@ -46,6 +51,7 @@ This directory contains GitHub Actions workflows for the Acquisitions DevOps App
 - ✅ Environment variable configuration
 
 **Environment Variables:**
+
 ```env
 NODE_ENV=test
 NODE_OPTIONS=--experimental-vm-modules
@@ -55,6 +61,7 @@ JWT_SECRET=test_jwt_secret_for_ci_testing_only
 ```
 
 **Services:**
+
 - PostgreSQL 15 Alpine with health checks
 - Auto-configured test database
 
@@ -63,12 +70,14 @@ JWT_SECRET=test_jwt_secret_for_ci_testing_only
 ### 3. Docker Build and Push (`docker-build-and-push.yml`)
 
 **Triggers:**
+
 - Push to `main` branch
 - Manual dispatch (`workflow_dispatch`)
 
 **Purpose:** Builds and publishes production-ready Docker images to Docker Hub.
 
 **Features:**
+
 - ✅ Multi-platform builds (linux/amd64, linux/arm64)
 - ✅ Docker Buildx configuration
 - ✅ Docker Hub authentication
@@ -79,6 +88,7 @@ JWT_SECRET=test_jwt_secret_for_ci_testing_only
 - ✅ Security scanning recommendations
 
 **Tags Generated:**
+
 - `latest` (main branch only)
 - `main` (branch name)
 - `main-<short-sha>` (branch + commit)
@@ -86,6 +96,7 @@ JWT_SECRET=test_jwt_secret_for_ci_testing_only
 - Custom suffix (manual dispatch)
 
 **Required Secrets:**
+
 - `DOCKER_USERNAME` - Docker Hub username
 - `DOCKER_PASSWORD` - Docker Hub password or access token
 
@@ -150,6 +161,7 @@ Ensure your project has:
 ### Notifications
 
 Configure notifications in GitHub Settings:
+
 - Email notifications for failed workflows
 - Slack/Teams integration for team updates
 - Mobile notifications via GitHub app
@@ -200,6 +212,7 @@ docker run -d --name test-postgres \
 ### Common Issues
 
 1. **Lint Failures**
+
    ```bash
    # Fix automatically
    npm run lint:fix
@@ -207,28 +220,31 @@ docker run -d --name test-postgres \
    ```
 
 2. **Test Failures**
+
    ```bash
    # Check database connection
    npm run db:migrate
-   
+
    # Run specific test
    npm test -- --testNamePattern="test-name"
    ```
 
 3. **Docker Build Failures**
+
    ```bash
    # Test build locally
    docker build --target production .
-   
+
    # Check Dockerfile syntax
    docker build --dry-run .
    ```
 
 4. **Permission Issues**
+
    ```bash
    # Verify Docker Hub credentials
    docker login
-   
+
    # Check repository secrets
    # Settings > Secrets and variables > Actions
    ```

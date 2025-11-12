@@ -22,8 +22,10 @@ async function testEndpoint(endpoint, options = {}) {
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
 
-    console.log(`${options.method || 'GET'} ${endpoint}: ${response.status} ${response.statusText}`);
-    
+    console.log(
+      `${options.method || 'GET'} ${endpoint}: ${response.status} ${response.statusText}`
+    );
+
     if (response.status === 429) {
       console.log('  ✓ Rate limiting is working!');
     } else if (response.status === 403) {
@@ -59,8 +61,8 @@ async function runTests() {
     userAgent: 'curl/7.68.0', // This might be detected as automated
     body: {
       email: 'test@example.com',
-      password: 'testpassword123'
-    }
+      password: 'testpassword123',
+    },
   });
 
   // Test 4: Auth endpoint with invalid email (should be blocked)
@@ -70,12 +72,14 @@ async function runTests() {
     userAgent: 'Mozilla/5.0 (compatible; Test)',
     body: {
       email: 'invalid-email',
-      password: 'testpassword123'
-    }
+      password: 'testpassword123',
+    },
   });
 
   // Test 5: Rate limiting test (make multiple requests)
-  console.log('\n5. Testing rate limiting (making 6 requests to auth endpoint):');
+  console.log(
+    '\n5. Testing rate limiting (making 6 requests to auth endpoint):'
+  );
   for (let i = 1; i <= 6; i++) {
     console.log(`  Request ${i}:`);
     await testEndpoint('/api/auth/sign-up', {
@@ -83,18 +87,22 @@ async function runTests() {
       userAgent: 'Mozilla/5.0 (compatible; Test)',
       body: {
         email: `test${i}@example.com`,
-        password: 'testpassword123'
-      }
+        password: 'testpassword123',
+      },
     });
-    
+
     if (i < 6) {
       // Small delay between requests
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 
-  console.log('\n✅ Test completed! Check the logs above to see how Arcjet is protecting your endpoints.');
-  console.log('\nNote: Some tests might pass if your Arcjet key is in test mode or if the specific rules are not triggered.');
+  console.log(
+    '\n✅ Test completed! Check the logs above to see how Arcjet is protecting your endpoints.'
+  );
+  console.log(
+    '\nNote: Some tests might pass if your Arcjet key is in test mode or if the specific rules are not triggered.'
+  );
 }
 
 runTests().catch(console.error);
