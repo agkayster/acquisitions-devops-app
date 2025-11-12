@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1762791603685" clover="3.2.0">
-  <project timestamp="1762791603685" name="All files">
-    <metrics statements="1113" coveredstatements="453" conditionals="13" coveredconditionals="6" methods="28" coveredmethods="2" elements="1154" coveredelements="461" complexity="0" loc="1113" ncloc="1113" packages="9" files="17" classes="17"/>
+<coverage generated="1762948960603" clover="3.2.0">
+  <project timestamp="1762948960603" name="All files">
+    <metrics statements="1117" coveredstatements="453" conditionals="13" coveredconditionals="6" methods="28" coveredmethods="2" elements="1158" coveredelements="461" complexity="0" loc="1117" ncloc="1117" packages="9" files="17" classes="17"/>
     <package name="src">
       <metrics statements="74" coveredstatements="72" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
       <file name="app.js" path="/Volumes/Projects/Applications/development/PersonalProjects/acquisitions-devops-app/src/app.js">
@@ -295,9 +295,9 @@
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="302" coveredstatements="32" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="0"/>
+      <metrics statements="305" coveredstatements="32" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="0"/>
       <file name="auth.controller.js" path="/Volumes/Projects/Applications/development/PersonalProjects/acquisitions-devops-app/src/controllers/auth.controller.js">
-        <metrics statements="124" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <metrics statements="127" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -406,11 +406,11 @@
         <line num="106" count="0" type="stmt"/>
         <line num="107" count="0" type="stmt"/>
         <line num="108" count="0" type="stmt"/>
-        <line num="109" count="1" type="stmt"/>
-        <line num="110" count="1" type="stmt"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="110" count="0" type="stmt"/>
         <line num="111" count="0" type="stmt"/>
-        <line num="112" count="0" type="stmt"/>
-        <line num="113" count="0" type="stmt"/>
+        <line num="112" count="1" type="stmt"/>
+        <line num="113" count="1" type="stmt"/>
         <line num="114" count="0" type="stmt"/>
         <line num="115" count="0" type="stmt"/>
         <line num="116" count="0" type="stmt"/>
@@ -422,6 +422,9 @@
         <line num="122" count="0" type="stmt"/>
         <line num="123" count="0" type="stmt"/>
         <line num="124" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="127" count="0" type="stmt"/>
       </file>
       <file name="users.controller.js" path="/Volumes/Projects/Applications/development/PersonalProjects/acquisitions-devops-app/src/controllers/users.controller.js">
         <metrics statements="178" coveredstatements="20" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
@@ -881,7 +884,7 @@
       </file>
     </package>
     <package name="src.services">
-      <metrics statements="220" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
+      <metrics statements="221" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
       <file name="auth.service.js" path="/Volumes/Projects/Applications/development/PersonalProjects/acquisitions-devops-app/src/services/auth.service.js">
         <metrics statements="101" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
@@ -987,7 +990,7 @@
         <line num="101" count="0" type="stmt"/>
       </file>
       <file name="users.service.js" path="/Volumes/Projects/Applications/development/PersonalProjects/acquisitions-devops-app/src/services/users.service.js">
-        <metrics statements="119" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <metrics statements="120" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -1084,10 +1087,10 @@
         <line num="94" count="0" type="stmt"/>
         <line num="95" count="0" type="stmt"/>
         <line num="96" count="0" type="stmt"/>
-        <line num="97" count="1" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
         <line num="98" count="1" type="stmt"/>
         <line num="99" count="1" type="stmt"/>
-        <line num="100" count="0" type="stmt"/>
+        <line num="100" count="1" type="stmt"/>
         <line num="101" count="0" type="stmt"/>
         <line num="102" count="0" type="stmt"/>
         <line num="103" count="0" type="stmt"/>
@@ -1107,6 +1110,7 @@
         <line num="117" count="0" type="stmt"/>
         <line num="118" count="0" type="stmt"/>
         <line num="119" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.utils">
