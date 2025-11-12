@@ -5,12 +5,14 @@ This document explains how to run the Acquisitions DevOps App in both developmen
 ## 🏗️ Architecture Overview
 
 ### Development Environment
+
 - **Application**: Express.js app with hot reload
 - **Database**: Neon Local (PostgreSQL proxy) running in Docker
 - **Connection**: Direct PostgreSQL connection via `postgres://` URL
 - **Features**: File watching, debug logging, database GUI (Adminer)
 
 ### Production Environment
+
 - **Application**: Optimized Express.js app
 - **Database**: Neon Cloud (serverless)
 - **Connection**: HTTP-based Neon serverless client
@@ -21,11 +23,13 @@ This document explains how to run the Acquisitions DevOps App in both developmen
 ### Development Setup
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Start Development Environment**
+
    ```bash
    npm run docker:dev
    ```
@@ -36,6 +40,7 @@ This document explains how to run the Acquisitions DevOps App in both developmen
    - Health Check: http://localhost:8000/health
 
 4. **View Logs**
+
    ```bash
    npm run docker:dev:logs
    ```
@@ -48,6 +53,7 @@ This document explains how to run the Acquisitions DevOps App in both developmen
 ### Production Setup
 
 1. **Set Environment Variables**
+
    ```bash
    export DATABASE_URL="your-neon-cloud-url"
    export ARCJET_KEY="your-arcjet-key"
@@ -55,6 +61,7 @@ This document explains how to run the Acquisitions DevOps App in both developmen
    ```
 
 2. **Start Production Environment**
+
    ```bash
    npm run docker:prod
    ```
@@ -92,6 +99,7 @@ This document explains how to run the Acquisitions DevOps App in both developmen
 ### Environment Variables
 
 #### Development (.env.development)
+
 ```env
 NODE_ENV=development
 PORT=8000
@@ -104,6 +112,7 @@ DEBUG=true
 ```
 
 #### Production (.env.production)
+
 ```env
 NODE_ENV=production
 PORT=8000
@@ -125,6 +134,7 @@ The application automatically detects the environment and uses the appropriate d
 ## 🐳 Docker Commands
 
 ### Basic Operations
+
 ```bash
 # Build only the application image
 npm run docker:build
@@ -138,6 +148,7 @@ docker compose -f docker-compose.dev.yml logs neon-local
 ```
 
 ### Development Commands
+
 ```bash
 # Start with rebuild
 docker compose -f docker-compose.dev.yml up --build
@@ -156,6 +167,7 @@ docker compose -f docker-compose.dev.yml exec app sh
 ```
 
 ### Production Commands
+
 ```bash
 # Start production with all services
 docker compose -f docker-compose.prod.yml up -d
@@ -175,20 +187,23 @@ docker compose -f docker-compose.prod.yml up -d --scale app=3
 ### Development Database (Neon Local)
 
 1. **Access Database CLI**
+
    ```bash
    docker compose -f docker-compose.dev.yml exec neon-local psql -U neondb_owner -d main
    ```
 
 2. **Run Migrations**
+
    ```bash
    # From host machine
    npm run db:migrate
-   
+
    # Or from container
    docker compose -f docker-compose.dev.yml exec app npm run db:migrate
    ```
 
 3. **Open Database Studio**
+
    ```bash
    npm run db:studio
    ```
@@ -209,16 +224,19 @@ Production uses your existing Neon Cloud database. Ensure your `DATABASE_URL` po
 ### Production Monitoring Stack
 
 Enable monitoring with:
+
 ```bash
 docker compose -f docker-compose.prod.yml --profile monitoring up -d
 ```
 
 Services included:
+
 - **Prometheus**: Metrics collection (http://localhost:9090)
 - **Fluentd**: Log aggregation
 - **Application Logs**: Available in Docker volumes
 
 ### Log Access
+
 ```bash
 # Application logs
 docker compose -f docker-compose.prod.yml logs app
@@ -241,11 +259,13 @@ Both development and production containers include health checks:
 ## 🔒 Security Features
 
 ### Development
+
 - Non-root user execution
 - Basic security headers
 - Development-friendly rate limiting
 
 ### Production
+
 - Multi-stage build for smaller images
 - No unnecessary packages in final image
 - Security headers via Nginx
@@ -259,34 +279,38 @@ Both development and production containers include health checks:
 ### Common Issues
 
 1. **Port Already in Use**
+
    ```bash
    # Find and kill process using port 8000
    lsof -ti:8000 | xargs kill -9
    ```
 
 2. **Database Connection Failed**
+
    ```bash
    # Check if Neon Local is healthy
    docker compose -f docker-compose.dev.yml ps
-   
+
    # View database logs
    docker compose -f docker-compose.dev.yml logs neon-local
    ```
 
 3. **Container Won't Start**
+
    ```bash
    # Check container logs
    docker compose -f docker-compose.dev.yml logs app
-   
+
    # Debug by running shell
    docker compose -f docker-compose.dev.yml run app sh
    ```
 
 4. **Build Fails**
+
    ```bash
    # Clean Docker build cache
    docker builder prune -f
-   
+
    # Rebuild without cache
    docker compose -f docker-compose.dev.yml build --no-cache
    ```
@@ -294,6 +318,7 @@ Both development and production containers include health checks:
 ### Performance Optimization
 
 1. **Faster Development Builds**
+
    ```bash
    # Use BuildKit for faster builds
    export DOCKER_BUILDKIT=1
@@ -305,6 +330,7 @@ Both development and production containers include health checks:
 ### Environment-Specific Debugging
 
 #### Development
+
 ```bash
 # Access development container
 docker compose -f docker-compose.dev.yml exec app sh
@@ -317,6 +343,7 @@ docker compose -f docker-compose.dev.yml exec app node -e "import('./src/config/
 ```
 
 #### Production
+
 ```bash
 # Check production container health
 docker compose -f docker-compose.prod.yml exec app wget -qO- http://localhost:8000/health

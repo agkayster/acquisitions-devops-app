@@ -1,6 +1,9 @@
 import request from 'supertest';
 import app from '#src/app.js';
 
+// Ensure Jest globals are available
+import { describe, it, expect } from '@jest/globals';
+
 describe('API ENDPOINT', () => {
   describe('GET /health', () => {
     it('should return status 200 and health info', async () => {

@@ -1,0 +1,155 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag_suffix:
+        description: 'Additional tag suffix (optional)'
+        required: false
+        default: ''
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: acquisitions-devops-app
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            # Set latest tag for main branch
+            type=ref,event=branch,suffix={{branch}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Add commit SHA
+            type=sha,prefix={{branch}}-,format=short
+            # Add timestamp tag
+            type=raw,value=prod-{{date 'YYYYMMDD-HHmmss' tz='UTC'}}
+            # Add custom suffix if provided
+            type=raw,value={{branch}}${{ github.event.inputs.tag_suffix != '' && format('-{0}', github.event.inputs.tag_suffix) || '' }},enable=${{ github.event.inputs.tag_suffix != '' }}
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=Acquisitions DevOps App - Express.js API with comprehensive security
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          target: production
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=gha,scope=buildkit-${{ github.ref_name }}
+            type=gha,scope=buildkit-main
+          cache-to: type=gha,scope=buildkit-${{ github.ref_name }},mode=max
+          build-args: |
+            NODE_VERSION=20-alpine
+
+      - name: Generate build summary
+        run: |
+          echo "## Docker Build and Push Results 🐳" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Status**: Docker image successfully built and pushed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Image Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Repository** | \`${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Platforms** | \`linux/amd64, linux/arm64\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Build Target** | \`production\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Image Digest** | \`${{ steps.build.outputs.digest }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Build Context** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Published Tags" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" | sed 's/,/\n/g' >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Docker Pull Commands" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Pull latest image" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Pull specific version" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "The Docker image is now available on Docker Hub and ready for deployment." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment Requirements:**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`DATABASE_URL\`: PostgreSQL connection string" >> $GITHUB_STEP_SUMMARY
+          echo "- \`ARCJET_KEY\`: Arcjet security key" >> $GITHUB_STEP_SUMMARY
+          echo "- \`JWT_SECRET\`: JWT signing secret" >> $GITHUB_STEP_SUMMARY
+          echo "- \`NODE_ENV\`: Set to \`production\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Update deployment status
+        if: success()
+        run: |
+          echo "Docker image successfully built and pushed:"
+          echo "Repository: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}"
+          echo "Digest: ${{ steps.build.outputs.digest }}"
+          echo "Tags:"
+          echo "${{ steps.meta.outputs.tags }}" | sed 's/,/\n/g'
+          echo ""
+          echo "Image is ready for deployment! 🚀"
+
+      - name: Security scan (optional)
+        if: success()
+        continue-on-error: true
+        run: |
+          echo "Running basic security checks..."
+
+          # Check if image was built successfully
+          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+
+          echo "✅ Image inspection passed"
+          echo ""
+          echo "💡 **Tip**: Consider integrating with security scanning tools like:"
+          echo "- Trivy"
+          echo "- Snyk"
+          echo "- Docker Scout"
+          echo "- Anchore"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          # Clean up any temporary files
+          docker buildx prune -f --filter until=24h
+          echo "Cleanup completed"

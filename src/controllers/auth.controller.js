@@ -99,7 +99,10 @@ export const signin = async (req, res, next) => {
   } catch (error) {
     logger.error('Sign in error:', error);
 
-    if (error.message === 'User with this email does not exist' || error.message === 'Invalid password') {
+    if (
+      error.message === 'User with this email does not exist' ||
+      error.message === 'Invalid password'
+    ) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 

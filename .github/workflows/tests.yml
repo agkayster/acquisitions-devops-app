@@ -1,0 +1,227 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    # Test matrix for different environments
+    strategy:
+      matrix:
+        node-version: ['20.x']
+
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: --experimental-vm-modules
+      DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+      ARCJET_KEY: ajkey_test_key_for_ci
+      JWT_SECRET: test_jwt_secret_for_ci_testing_only
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for PostgreSQL
+        run: |
+          timeout 60s bash -c 'until pg_isready -h localhost -p 5432 -U test_user; do sleep 2; done'
+
+      - name: Run database migrations (if exists)
+        run: |
+          if npm run db:migrate --if-present; then
+            echo "Database migrations completed successfully"
+          else
+            echo "No migrations to run or migrations failed"
+          fi
+        continue-on-error: true
+
+      - name: Run tests
+        id: test
+        run: |
+          echo "Running tests with coverage..."
+          npm test -- --coverage --verbose --passWithNoTests 2>&1 | tee test-output.txt
+          echo "test_exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: |
+            coverage/
+            test-output.txt
+          retention-days: 30
+
+      - name: Annotate test failures
+        if: steps.test.outputs.test_exit_code != '0'
+        run: |
+          echo "::error title=Test Failures::Some tests failed. Check the test output for details."
+
+          if [ -f test-output.txt ]; then
+            echo "Processing test output for annotations..."
+            
+            # Look for Jest test failures and create annotations
+            while IFS= read -r line; do
+              # Check for failing test lines
+              if [[ $line == *"FAIL"* ]] && [[ $line == *".test."* ]]; then
+                echo "::error::Test failure: $line"
+              elif [[ $line == *"✓"* ]] && [[ $line == *"failing"* ]]; then
+                echo "::error::$line"
+              elif [[ $line == *"Expected:"* ]] || [[ $line == *"Received:"* ]]; then
+                echo "::warning::$line"
+              elif [[ $line == *"at"* ]] && [[ $line == *".test."* ]]; then
+                echo "::notice::$line"
+              fi
+            done < test-output.txt
+          fi
+
+      - name: Parse test results
+        id: test-results
+        if: always()
+        run: |
+          # Initialize default values
+          TESTS_RUN="0"
+          TESTS_PASSED="0"
+          TESTS_FAILED="0"
+          COVERAGE_LINES="N/A"
+          COVERAGE_FUNCTIONS="N/A"
+          COVERAGE_BRANCHES="N/A"
+          COVERAGE_STATEMENTS="N/A"
+
+          if [ -f test-output.txt ]; then
+            echo "Parsing test output file..."
+            
+            # Extract test summary - look for "Tests: X passed, Y total"
+            if grep -q "Tests:" test-output.txt; then
+              # Get total tests run
+              TESTS_LINE=$(grep "Tests:" test-output.txt | head -1)
+              TESTS_RUN=$(echo "$TESTS_LINE" | grep -oP '\d+(?= total)' || echo "0")
+              
+              # Get passed tests
+              TESTS_PASSED=$(echo "$TESTS_LINE" | grep -oP '\d+(?= passed)' || echo "0")
+              
+              # Get failed tests
+              TESTS_FAILED=$(echo "$TESTS_LINE" | grep -oP '\d+(?= failed)' || echo "0")
+            fi
+            
+            echo "Test stats: Run=$TESTS_RUN, Passed=$TESTS_PASSED, Failed=$TESTS_FAILED"
+            
+            # Extract coverage from table format
+            # Jest outputs: All files | 85.71 | 75 | 100 | 85.71
+            if grep -q "All files" test-output.txt; then
+              COVERAGE_LINE=$(grep "All files" test-output.txt | head -1)
+              
+              # Extract percentages from the line
+              COVERAGE_STATEMENTS=$(echo "$COVERAGE_LINE" | awk '{print $3}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_BRANCHES=$(echo "$COVERAGE_LINE" | awk '{print $4}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_FUNCTIONS=$(echo "$COVERAGE_LINE" | awk '{print $5}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_LINES=$(echo "$COVERAGE_LINE" | awk '{print $6}' | grep -oP '\d+\.?\d*' || echo "0")
+              
+              # Add % suffix if we got valid numbers
+              [ "$COVERAGE_STATEMENTS" != "0" ] && COVERAGE_STATEMENTS="${COVERAGE_STATEMENTS}%" || COVERAGE_STATEMENTS="N/A"
+              [ "$COVERAGE_BRANCHES" != "0" ] && COVERAGE_BRANCHES="${COVERAGE_BRANCHES}%" || COVERAGE_BRANCHES="N/A"
+              [ "$COVERAGE_FUNCTIONS" != "0" ] && COVERAGE_FUNCTIONS="${COVERAGE_FUNCTIONS}%" || COVERAGE_FUNCTIONS="N/A"
+              [ "$COVERAGE_LINES" != "0" ] && COVERAGE_LINES="${COVERAGE_LINES}%" || COVERAGE_LINES="N/A"
+            fi
+            
+            echo "Coverage stats: Lines=$COVERAGE_LINES, Functions=$COVERAGE_FUNCTIONS, Branches=$COVERAGE_BRANCHES, Statements=$COVERAGE_STATEMENTS"
+          else
+            echo "test-output.txt not found, using defaults"
+          fi
+
+          # Write outputs - use proper GitHub Actions syntax
+          echo "tests_run=${TESTS_RUN}" >> "$GITHUB_OUTPUT"
+          echo "tests_passed=${TESTS_PASSED}" >> "$GITHUB_OUTPUT"
+          echo "tests_failed=${TESTS_FAILED}" >> "$GITHUB_OUTPUT"
+          echo "coverage_lines=${COVERAGE_LINES}" >> "$GITHUB_OUTPUT"
+          echo "coverage_functions=${COVERAGE_FUNCTIONS}" >> "$GITHUB_OUTPUT"
+          echo "coverage_branches=${COVERAGE_BRANCHES}" >> "$GITHUB_OUTPUT"
+          echo "coverage_statements=${COVERAGE_STATEMENTS}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate GitHub step summary
+        if: always()
+        run: |
+          echo "## Test Results 🧪" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Test status
+          if [ "${{ steps.test.outputs.test_exit_code }}" = "0" ]; then
+            echo "✅ **Status**: All tests passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status**: Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Test statistics
+          echo "### Test Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Run | ${{ steps.test-results.outputs.tests_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Passed | ${{ steps.test-results.outputs.tests_passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Failed | ${{ steps.test-results.outputs.tests_failed }} |" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Coverage information
+          echo "### Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage Type | Percentage |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines | ${{ steps.test-results.outputs.coverage_lines }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Functions | ${{ steps.test-results.outputs.coverage_functions }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branches | ${{ steps.test-results.outputs.coverage_branches }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Statements | ${{ steps.test-results.outputs.coverage_statements }} |" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Detailed coverage report is available in the artifacts." >> $GITHUB_STEP_SUMMARY
+
+          # Add failure details if tests failed
+          if [ "${{ steps.test.outputs.test_exit_code }}" != "0" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ❌ Test Failures" >> $GITHUB_STEP_SUMMARY
+            echo "Some tests failed. Please check the test output above and fix the failing tests." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Troubleshooting Tips:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Review the test output for specific error messages" >> $GITHUB_STEP_SUMMARY
+            echo "- Check if all required environment variables are set" >> $GITHUB_STEP_SUMMARY
+            echo "- Ensure database migrations are up to date" >> $GITHUB_STEP_SUMMARY
+            echo "- Run tests locally: \`npm test\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check final test status
+        run: |
+          if [ "${{ steps.test.outputs.test_exit_code }}" != "0" ]; then
+            echo "Tests failed. Please fix the failing tests before merging."
+            exit 1
+          fi
+          echo "All tests passed! ✅"

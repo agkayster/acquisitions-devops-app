@@ -56,12 +56,13 @@ export const updateUserById = async (userId, updateData) => {
   try {
     // Build update object dynamically (only include provided fields)
     const fieldsToUpdate = {};
-    
+
     if (updateData.name !== undefined) fieldsToUpdate.name = updateData.name;
     if (updateData.email !== undefined) fieldsToUpdate.email = updateData.email;
     if (updateData.role !== undefined) fieldsToUpdate.role = updateData.role;
-    if (updateData.password !== undefined) fieldsToUpdate.password = updateData.password;
-    
+    if (updateData.password !== undefined)
+      fieldsToUpdate.password = updateData.password;
+
     // Always update the updated_at timestamp
     fieldsToUpdate.updated_at = new Date();
 
@@ -96,7 +97,7 @@ export const updateUserById = async (userId, updateData) => {
 };
 
 // Delete user by ID
-export const deleteUserById = async (userId) => {
+export const deleteUserById = async userId => {
   try {
     const deletedUser = await db
       .delete(users)
