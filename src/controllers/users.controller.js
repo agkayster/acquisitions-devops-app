@@ -148,14 +148,6 @@ export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Validate UUID format
-    // if (!isUUID(id)) {
-    //   return res.status(400).json({
-    //     message: 'Invalid user ID format',
-    //     error: 'User ID must be a valid UUID',
-    //   });
-    // }
-
     logger.info(`Deleting user with ID: ${id}`);
 
     const deletedUser = await deleteUserById(id);

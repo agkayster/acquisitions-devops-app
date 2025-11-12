@@ -1309,3 +1309,5 @@
 {"conclusion":"ERROR","id":"lreq_01k9vz4m7mfzzawkxk58fqrjvz","ip":"::ffff:127.0.0.1","level":"info","message":"Arcjet decision","path":"/api","reason":{"message":"Failed to build fingerprint - unable to generate fingerprint: error generating identifier - requested `ip` characteristic but the `ip` value was empty","type":"ERROR"},"service":"acquisitions-api"}
 {"level":"info","message":"::ffff:127.0.0.1 - - [12/Nov/2025:12:02:40 +0000] \"GET /api HTTP/1.1\" 200 199 \"-\" \"-\"","service":"acquisitions-api"}
 {"level":"info","message":"::ffff:127.0.0.1 - - [12/Nov/2025:12:02:40 +0000] \"GET /nonexistent HTTP/1.1\" 404 36 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
+{"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
