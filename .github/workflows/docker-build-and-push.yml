@@ -12,7 +12,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: acquisitions-devops-app
+  IMAGE_NAME: acquisitions-devops-app-app
 
 jobs:
   build-and-push:
