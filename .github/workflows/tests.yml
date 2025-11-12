@@ -107,28 +107,66 @@ jobs:
 
       - name: Parse test results
         id: test-results
+        if: always()
         run: |
+          # Initialize default values
+          TESTS_RUN="0"
+          TESTS_PASSED="0"
+          TESTS_FAILED="0"
+          COVERAGE_LINES="N/A"
+          COVERAGE_FUNCTIONS="N/A"
+          COVERAGE_BRANCHES="N/A"
+          COVERAGE_STATEMENTS="N/A"
+
           if [ -f test-output.txt ]; then
-            # Extract test summary information
-            TESTS_RUN=$(grep -E "Tests:|passed|failed" test-output.txt | tail -1 | grep -oE '[0-9]+' | head -1 || echo "0")
-            TESTS_PASSED=$(grep -oE '[0-9]+ passed' test-output.txt | grep -oE '[0-9]+' || echo "0")
-            TESTS_FAILED=$(grep -oE '[0-9]+ failed' test-output.txt | grep -oE '[0-9]+' || echo "0")
+            echo "Parsing test output file..."
             
-            # Extract coverage information
-            COVERAGE_LINES=$(grep -E "Lines.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
-            COVERAGE_FUNCTIONS=$(grep -E "Functions.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
-            COVERAGE_BRANCHES=$(grep -E "Branches.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
-            COVERAGE_STATEMENTS=$(grep -E "Statements.*:" coverage/lcov-report/index.html 2>/dev/null | grep -oE '[0-9]+\.[0-9]+%' | head -1 || echo "N/A")
+            # Extract test summary - look for "Tests: X passed, Y total"
+            if grep -q "Tests:" test-output.txt; then
+              # Get total tests run
+              TESTS_LINE=$(grep "Tests:" test-output.txt | head -1)
+              TESTS_RUN=$(echo "$TESTS_LINE" | grep -oP '\d+(?= total)' || echo "0")
+              
+              # Get passed tests
+              TESTS_PASSED=$(echo "$TESTS_LINE" | grep -oP '\d+(?= passed)' || echo "0")
+              
+              # Get failed tests
+              TESTS_FAILED=$(echo "$TESTS_LINE" | grep -oP '\d+(?= failed)' || echo "0")
+            fi
             
-            # Set outputs
-            echo "tests_run=$TESTS_RUN" >> $GITHUB_OUTPUT
-            echo "tests_passed=$TESTS_PASSED" >> $GITHUB_OUTPUT  
-            echo "tests_failed=$TESTS_FAILED" >> $GITHUB_OUTPUT
-            echo "coverage_lines=$COVERAGE_LINES" >> $GITHUB_OUTPUT
-            echo "coverage_functions=$COVERAGE_FUNCTIONS" >> $GITHUB_OUTPUT
-            echo "coverage_branches=$COVERAGE_BRANCHES" >> $GITHUB_OUTPUT
-            echo "coverage_statements=$COVERAGE_STATEMENTS" >> $GITHUB_OUTPUT
+            echo "Test stats: Run=$TESTS_RUN, Passed=$TESTS_PASSED, Failed=$TESTS_FAILED"
+            
+            # Extract coverage from table format
+            # Jest outputs: All files | 85.71 | 75 | 100 | 85.71
+            if grep -q "All files" test-output.txt; then
+              COVERAGE_LINE=$(grep "All files" test-output.txt | head -1)
+              
+              # Extract percentages from the line
+              COVERAGE_STATEMENTS=$(echo "$COVERAGE_LINE" | awk '{print $3}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_BRANCHES=$(echo "$COVERAGE_LINE" | awk '{print $4}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_FUNCTIONS=$(echo "$COVERAGE_LINE" | awk '{print $5}' | grep -oP '\d+\.?\d*' || echo "0")
+              COVERAGE_LINES=$(echo "$COVERAGE_LINE" | awk '{print $6}' | grep -oP '\d+\.?\d*' || echo "0")
+              
+              # Add % suffix if we got valid numbers
+              [ "$COVERAGE_STATEMENTS" != "0" ] && COVERAGE_STATEMENTS="${COVERAGE_STATEMENTS}%" || COVERAGE_STATEMENTS="N/A"
+              [ "$COVERAGE_BRANCHES" != "0" ] && COVERAGE_BRANCHES="${COVERAGE_BRANCHES}%" || COVERAGE_BRANCHES="N/A"
+              [ "$COVERAGE_FUNCTIONS" != "0" ] && COVERAGE_FUNCTIONS="${COVERAGE_FUNCTIONS}%" || COVERAGE_FUNCTIONS="N/A"
+              [ "$COVERAGE_LINES" != "0" ] && COVERAGE_LINES="${COVERAGE_LINES}%" || COVERAGE_LINES="N/A"
+            fi
+            
+            echo "Coverage stats: Lines=$COVERAGE_LINES, Functions=$COVERAGE_FUNCTIONS, Branches=$COVERAGE_BRANCHES, Statements=$COVERAGE_STATEMENTS"
+          else
+            echo "test-output.txt not found, using defaults"
           fi
+
+          # Write outputs - use proper GitHub Actions syntax
+          echo "tests_run=${TESTS_RUN}" >> "$GITHUB_OUTPUT"
+          echo "tests_passed=${TESTS_PASSED}" >> "$GITHUB_OUTPUT"
+          echo "tests_failed=${TESTS_FAILED}" >> "$GITHUB_OUTPUT"
+          echo "coverage_lines=${COVERAGE_LINES}" >> "$GITHUB_OUTPUT"
+          echo "coverage_functions=${COVERAGE_FUNCTIONS}" >> "$GITHUB_OUTPUT"
+          echo "coverage_branches=${COVERAGE_BRANCHES}" >> "$GITHUB_OUTPUT"
+          echo "coverage_statements=${COVERAGE_STATEMENTS}" >> "$GITHUB_OUTPUT"
 
       - name: Generate GitHub step summary
         if: always()
