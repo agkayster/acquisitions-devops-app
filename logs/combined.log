@@ -1319,3 +1319,4 @@
 {"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
 {"level":"info","message":"Database configuration loaded for development environment","service":"acquisitions-api"}
 {"level":"info","message":"Using direct PostgreSQL connection for development","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:192.168.65.1 - - [12/Nov/2025:17:02:14 +0000] \"GET /favicon.ico HTTP/1.1\" 404 36 \"-\" \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36\"","service":"acquisitions-api"}
